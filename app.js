@@ -7,6 +7,23 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+var db = require('./config/db.js');
+
+async function getDb() { 
+  //conexión a la la bd
+  try {
+    await db.authenticate();
+    db.sync();
+    console.log('conexión correcta a la bd...')
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+getDb();
+
+
 var app = express();
 
 // view engine setup

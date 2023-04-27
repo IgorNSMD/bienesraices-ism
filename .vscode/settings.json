@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/0e3fc411-6d1d-4197-8f03-e62627437aa4/resourceGroups/bienesraices-ism-gr/providers/Microsoft.Web/sites/bienesraices-ism",
+    "appService.deploySubpath": "."
+}
