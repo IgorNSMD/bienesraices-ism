@@ -1,17 +1,12 @@
 var createError = require('http-errors');
 var express = require('express');
-var csrf = require('csurf');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const { format } = require("date-fns");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-var UserRoutes = require('./routes/UserRoutes.js')
-var PropertieRoutes = require('./routes/PropertiesRoutes.js')
-var AppRoutes = require('./routes/AppRoutes.js')
-var ApiRoutes = require( './routes/ApiRoutes.js')
 
 var db = require('./config/db.js');
 
@@ -42,18 +37,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Habilitar CSRF
-app.use( csrf({cookie: true}) )
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-
-// Routing
-app.use('/', AppRoutes)
-app.use('/auth', UserRoutes)
-app.use('/', PropertieRoutes)
-app.use('/api', ApiRoutes)
-
+app.locals.format = format;
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
