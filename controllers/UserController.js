@@ -6,6 +6,10 @@ const User = require('../model/User.js')
 const { generateId,generateToken } = require('../helpers/token.js')
 const { emailRegister, emailRecoverPassword } = require('../helpers/emails.js')
 
+function testUser(req, res, next) {
+    res.send('envio UserRoutes');
+}
+
 const getLogin =(req,res) =>{
     res.render('auth/login',{
         authenticated: true,
@@ -339,6 +343,7 @@ const postNewPassword = async(req,res) => {
 }
 
 module.exports =  {
+    testUser,
     getLogin,
     postAuthenticate,
     postSignOut,
