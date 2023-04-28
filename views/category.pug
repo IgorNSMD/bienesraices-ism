@@ -1,0 +1,14 @@
+extends ./layout/app
+
+block content
+
+    section(class="py-5")
+        h2(class="text-center text-4xl font-extrabold pt-10")= pageLabel
+
+        // pre= JSON.stringify(houses, undefined, 2)
+        if properties.length
+            div(class="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-14")
+                each property in properties
+                    include ./template/card
+        else 
+            p(class="text-center text-gray-800 text-sm py-10") No hay resultados
