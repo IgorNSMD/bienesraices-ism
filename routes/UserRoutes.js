@@ -1,10 +1,15 @@
 const express = require('express')
-const {getLogin, postAuthenticate, postSignOut, getRegister, postRegister, getConfirm, getRecoverPassword, postResetPassword,
-        getCheckToken, postNewPassword} = require('../controllers/UserController.js')
+// const {getLogin, postAuthenticate, postSignOut, getRegister, postRegister, getConfirm, getRecoverPassword, postResetPassword,
+//         getCheckToken, postNewPassword} = require('../controllers/UserController.js')
 
 const router = express.Router();
 
-router.get('/login', getLogin)
+router.get('/', function(req, res, next) {
+        res.send('envio UserRoutes');
+      });
+
+
+//router.get('/login', getLogin)
 
 // router.post('/login', postAuthenticate)
 
