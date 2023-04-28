@@ -5,31 +5,25 @@ const {getLogin, postAuthenticate, postSignOut, getRegister, postRegister, getCo
 const router = express.Router();
 
 router.get('/login', getLogin)
-router.post('/login', postAuthenticate)
 
-// Cerrar Sesión
-router.post('/signout', postSignOut)
+// router.post('/login', postAuthenticate)
 
-router.get('/register', getRegister )
+// // Cerrar Sesión
+// router.post('/signout', postSignOut)
 
-router.post('/register', postRegister )
+// router.get('/register', getRegister )
 
-router.get('/confirm/:token', getConfirm)
+// router.post('/register', postRegister )
 
-router.get('/recover-password', getRecoverPassword )
-router.post('/reset-password', postResetPassword )
+// router.get('/confirm/:token', getConfirm)
 
-// Almacena la nueva password
-router.get('/recover-password/:token',getCheckToken )
-router.post('/recover-password/:token', postNewPassword )
+// router.get('/recover-password', getRecoverPassword )
+// router.post('/reset-password', postResetPassword )
+
+// // Almacena la nueva password
+// router.get('/recover-password/:token',getCheckToken )
+// router.post('/recover-password/:token', postNewPassword )
 
 
-// router.get('/', (req,res)=>{
-//     res.send('Hola mundo en express..')
-// })
-
-// router.route('/')
-//       .get( (req,res)=>{res.json({msg: 'Hola Mundo...'})} )
-//       .post( (req,res)=>{res.json({msg: 'Respuesta tipo post...'})} )
 
 module.exports = router
