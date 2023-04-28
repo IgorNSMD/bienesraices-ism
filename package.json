@@ -7,12 +7,13 @@
     "server": "nodemon app.js",
     "css": "postcss public/css/tailwind.css -o public/css/app.css --watch",
     "js": "webpack --watch",
-    "dev": "concurrently \"npm run css\" \"npm run js\" "    
+    "dev": "concurrently \"npm run css\" \"npm run js\" "
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cookie-parser": "~1.4.4",
     "csurf": "^1.11.0",
+    "date-fns": "^2.29.3",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
     "dropzone": "^5.9.3",
