@@ -9,6 +9,11 @@ const { format } = require("date-fns");
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+var UserRoutes = require('./routes/UserRoutes.js')
+var PropertieRoutes = require('./routes/PropertiesRoutes.js')
+var AppRoutes = require('./routes/AppRoutes.js')
+var ApiRoutes = require( './routes/ApiRoutes.js')
+
 var db = require('./config/db.js');
 
 async function getDb() { 
