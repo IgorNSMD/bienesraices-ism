@@ -8,7 +8,7 @@ var { testUser } = require('../controllers/UserController.js')
 
 const router = express.Router();
 
-router.get('/login', testUser );
+// router.get('/login', testUser );
 
 
 //router.get('/login', getLogin)
