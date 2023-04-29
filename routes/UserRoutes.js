@@ -1,12 +1,12 @@
 const express = require('express')
-const {testUser, 
+//const {testUser, 
 // getLogin, postAuthenticate, postSignOut, getRegister, postRegister, getConfirm, getRecoverPassword, postResetPassword,
 // getCheckToken, postNewPassword
-} = require('../controllers/UserController.js')
+// } = require('../controllers/UserController.js')
 
 const router = express.Router();
 
-router.get('/login', testUser );
+//router.get('/login', testUser );
 
 
 //router.get('/login', getLogin)
