@@ -4,9 +4,11 @@ const express = require('express')
 // getCheckToken, postNewPassword
 // } = require('../controllers/UserController.js')
 
+var { testUser } = require('../controllers/UserController.js')
+
 const router = express.Router();
 
-//router.get('/login', testUser );
+router.get('/login', testUser );
 
 
 //router.get('/login', getLogin)
