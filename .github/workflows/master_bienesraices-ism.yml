@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'bienesraices-ism'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7E310D24667B4F308BF7B4C42C172D34 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ED89A72903AF40BAA160F95E5C3D5B34 }}
           package: .
