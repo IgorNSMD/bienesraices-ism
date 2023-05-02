@@ -1,5 +1,13 @@
 const express = require('express')
+const { check, validationResult } = require('express-validator')
+const bcrypt = require('bcrypt')
+
 const router = express.Router();
+
+const User = require('../model/User.js')
+const { generateId,generateToken } = require('../helpers/token.js')
+const { emailRegister, emailRecoverPassword } = require('../helpers/emails.js')
+
 
 router.get('/login', function testUser(req, res, next) {
     res.send('envio login...');
