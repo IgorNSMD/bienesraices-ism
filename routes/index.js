@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express - Bienes Raices-ISM - MySQL - P37..' });
+  res.render('index', { title: 'Express - Bienes Raices-ISM - MySQL - P38..' });
 });
 
 module.exports = router;
