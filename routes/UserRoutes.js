@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt')
 
 const router = express.Router();
 
-const User = require('../model/User.js')
-const { generateId,generateToken } = require('../helpers/token.js')
-const { emailRegister, emailRecoverPassword } = require('../helpers/emails.js')
+// const User = require('../model/User.js')
+// const { generateId,generateToken } = require('../helpers/token.js')
+// const { emailRegister, emailRecoverPassword } = require('../helpers/emails.js')
 
 
 router.get('/login', function testUser(req, res, next) {
