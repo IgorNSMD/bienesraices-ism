@@ -1,6 +1,15 @@
 const express = require('express')
 const { check, validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs')
+const { Sequelize } = require('sequelize')
+const { unlink } = require('node:fs/promises')
+
+var dotenv = require('dotenv');
+var fs = require("fs")
+
+const multer = require('multer')
+const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer')
 
 const router = express.Router();
 
