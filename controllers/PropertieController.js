@@ -1,13 +1,98 @@
 const { unlink } = require('node:fs/promises')
-const { validationResult } = require('express-validator')
+const express = require('express')
+const { validationResult, body } = require('express-validator')
+const multer = require('multer')
+const path = require('path')
+const jwt = require('jsonwebtoken')
+
 
 const { Price,Category, Property, Message, User } = require('../model/index.js')
 const { esVendedor,formatDate } = require('../helpers/index.js')
+const { generateId } = require('../helpers/token.js')
 
-// import Price from '../model/Price.js'
-// import Category from '../model/Category.js'
 
-const admin = async(req,res) => {
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null,'./public/uploads/')
+    },
+    filename: function(req,file,cb){
+        cb(null, generateId() + path.extname(file.originalname) )
+    }
+})
+
+const fileUpload = multer( { storage } )
+
+
+const router = express.Router();
+
+async function protectRoute(req, res, next){
+    console.log('desde el middleware..')
+    // Verificar si hay un token
+    //console.log(req.cookies._token)
+    const { _token } = req.cookies
+    if(!_token){
+        return res.redirect('/auth/login')
+    }
+
+    // comprobar el token
+    try {
+
+        const decoded = jwt.verify(_token, process.env.JWT_SECRET)
+        //console.log(decoded)
+
+        const user = await User.scope('deletePassword').findByPk(decoded.id)
+        //console.log(user)
+
+        // Almacenar al usuario req
+        if(user){
+            req.user = user
+        } else {
+            return res.redirect('/auth/login')
+        }
+        
+        return next();
+
+    } catch (error) {
+        return res.clearCookie('_token').redirect('/auth/login')
+    }
+
+    next();
+}
+
+
+async function IdentifyUser (req, res, next ) {
+
+    // Identificar si hay un tocken en las cookies
+    const { _token } = req.cookies
+    if(!_token){
+        req.user = null
+        return next()
+    }
+
+    // Comprobar el token
+    try {
+        const decoded = jwt.verify(_token, process.env.JWT_SECRET)
+        //console.log(decoded)
+
+        const user = await User.scope('deletePassword').findByPk(decoded.id)
+        //console.log(user)
+
+        // Almacenar al usuario req
+        if(user){
+            req.user = user
+        }
+        
+        return next();        
+    } catch (error) {
+        console.log(error)
+        return res.clearCookie('_token').redirect('/auth/login')
+    }
+
+
+}
+
+//router.get('/my-properties', protectRoute, admin)
+router.get('/my-properties', protectRoute, async(req,res) => {
     
     
     //console.log(req.query)
@@ -67,10 +152,11 @@ const admin = async(req,res) => {
     }
 
 
-}
+})
 
 // Formulario para crear nueva propiedad
-const create = async (req,res) => {
+// router.get('/properties/create', protectRoute, create)
+router.get('/properties/create', protectRoute, async (req,res) => {
     
     // Modelo de precios y categorias
     const [ categories, prices ] = await Promise.all([
@@ -85,68 +171,84 @@ const create = async (req,res) => {
         csrfToken: req.csrfToken(),
         info:{}
     })
-}
+})
 
-const save = async(req,res) => {
+//save
+router.post('/properties/create', protectRoute, 
+    body('title').notEmpty().withMessage('El título del anuncio es obligatorio'),
+    body('description')
+        .notEmpty().withMessage('El campo descripción es obligatorio')
+        .isLength({max:200}).withMessage('La descripción es muy larga...'),
+    body('category').isNumeric().withMessage('Selecciona una categoría'),
+    body('price').isNumeric().withMessage('Selecciona una rango de precio'),
+    body('bedrooms').isNumeric().withMessage('Selecciona cantidad de habitiaciones'),
+    body('parking').isNumeric().withMessage('Selecciona cantidad de estacionamientos'),
+    body('toilets').isNumeric().withMessage('Selecciona cantidad de baños'),
+    body('lat').notEmpty().withMessage('Ubica la propiedad en el mapa'),
+    async(req,res) => {
 
 
-    // Validacion
-    let result = validationResult(req)
-
-    // verificar result esté vacio
-    if(!result.isEmpty()){
-        // Modelo de precios y categorias
-        const [ categories, prices ] = await Promise.all([
-            Category.findAll(),
-            Price.findAll()
-        ])        
-
-        //Existen errores...
-        return res.render('properties/create',{
-        pageLabel: 'Crear propiedad',
-        csrfToken: req.csrfToken(),
-        categories,
-        prices,
-        errors: result.array(),
-        info:req.body
-    })
-    }
-
-    // Crear Registro
-
-    const { title,description, bedrooms, parking, toilets, street, lat, lng, category, price } = req.body
-
-    //console.log(req.body)
-    //console.log(req.user)
-    const { id: userid } = req.user
-
-    try {
-
-        const property = await Property.create({
-            title,
-            description,
-            bedrooms, parking, toilets,
-            street, lat, lng, 
-            categoryid: category, 
-            priceid: price,
-            userid,
-            picture:''
-
+        // Validacion
+        let result = validationResult(req)
+    
+        // verificar result esté vacio
+        if(!result.isEmpty()){
+            // Modelo de precios y categorias
+            const [ categories, prices ] = await Promise.all([
+                Category.findAll(),
+                Price.findAll()
+            ])        
+    
+            //Existen errores...
+            return res.render('properties/create',{
+            pageLabel: 'Crear propiedad',
+            csrfToken: req.csrfToken(),
+            categories,
+            prices,
+            errors: result.array(),
+            info:req.body
         })
-
-        const { id } = property
-
-        res.redirect(`/properties/add-image/${ id }`)
-
-
-
-    } catch (error) {
-        console.log(error)
+        }
+    
+        // Crear Registro
+    
+        const { title,description, bedrooms, parking, toilets, street, lat, lng, category, price } = req.body
+    
+        //console.log(req.body)
+        //console.log(req.user)
+        const { id: userid } = req.user
+    
+        try {
+    
+            const property = await Property.create({
+                title,
+                description,
+                bedrooms, parking, toilets,
+                street, lat, lng, 
+                categoryid: category, 
+                priceid: price,
+                userid,
+                picture:''
+    
+            })
+    
+            const { id } = property
+    
+            res.redirect(`/properties/add-image/${ id }`)
+    
+    
+    
+        } catch (error) {
+            console.log(error)
+        }
+    
     }
+)
+|
 
-}
 
-const addImage = async(req,res) => {
+// router.get('/properties/add-image/:id',  protectRoute, addImage)
+router.get('/properties/add-image/:id',  protectRoute, async(req,res) => {
     //res.send('Add image...')
 
     const { id } = req.params
@@ -178,10 +280,10 @@ const addImage = async(req,res) => {
         csrfToken: req.csrfToken(),        
         property
     })
-}
+})
 
-
-const saveFile = async( req, res, next ) =>{
+// router.post('/properties/add-image/:id', protectRoute, fileUpload.single('image'), saveFile )
+router.post('/properties/add-image/:id', protectRoute, fileUpload.single('image'), async( req, res, next ) =>{
 
     const { id } = req.params
 
@@ -220,9 +322,10 @@ const saveFile = async( req, res, next ) =>{
         console.log(error)
         
     }
-}
+})
 
-const edit = async(req,res) =>{
+//router.get('/properties/edit/:id', protectRoute, edit)
+router.get('/properties/edit/:id', protectRoute, async(req,res) =>{
 
     const { id } = req.params
 
@@ -251,9 +354,21 @@ const edit = async(req,res) =>{
         csrfToken: req.csrfToken(),
         info: property
     })
-}
+})
 
-const saveChange = async(req,res) => {
+//saveChange
+router.post('/properties/edit/:id', protectRoute, 
+    body('title').notEmpty().withMessage('El título del anuncio es obligatorio'),
+    body('description')
+        .notEmpty().withMessage('El campo descripción es obligatorio')
+        .isLength({max:200}).withMessage('La descripción es muy larga...'),
+    body('category').isNumeric().withMessage('Selecciona una categoría'),
+    body('price').isNumeric().withMessage('Selecciona una rango de precio'),
+    body('bedrooms').isNumeric().withMessage('Selecciona cantidad de habitiaciones'),
+    body('parking').isNumeric().withMessage('Selecciona cantidad de estacionamientos'),
+    body('toilets').isNumeric().withMessage('Selecciona cantidad de baños'),
+    body('lat').notEmpty().withMessage('Ubica la propiedad en el mapa'),
+    async(req,res) => {
 
     // console.log('Guardar Cambios.....')
 
@@ -318,9 +433,11 @@ const saveChange = async(req,res) => {
     } catch (error) {
         console.log(error)
     }
-}
+})
 
-const remove = async(req,res) => {
+// router.post('/properties/remove/:id', protectRoute, remove)
+
+router.post('/properties/remove/:id', protectRoute, async(req,res) => {
 
     //console.log('inicio eliminacion registro..')
 
@@ -351,11 +468,11 @@ const remove = async(req,res) => {
     await property.destroy()
     res.redirect('/my-properties')
     
-}
+})
 
 // Modifica el estado de la propiedad
-
-const changeState = async(req,res) => {
+// router.put('/properties/changeState/:id', protectRoute, changeState)
+router.put('/properties/changeState/:id', protectRoute, async(req,res) => {
     
 
     const { id } = req.params
@@ -384,9 +501,11 @@ const changeState = async(req,res) => {
     res.json({
         res:'ok'
     })
-}
+})
 
-const showProperty = async(req,res) => {
+// showProperty
+router.get('/property/:id', 
+    IdentifyUser, async(req,res) => {
     //res.send('mostrando titulo...')
 
     const { id } = req.params
@@ -418,9 +537,14 @@ const showProperty = async(req,res) => {
     })
 
 
-}
+})
 
-const sendMesage = async(req,res) => {
+// sendMesage
+// Almacenar los mensajes
+router.post('/property/:id', 
+    IdentifyUser,
+    body('message').isLength({min:5}).withMessage('El mensaje no puede ir vacio o es muy corto'),
+    async(req,res) => {
     const { id } = req.params
 
     // Validar que la propuiedad exista
@@ -479,9 +603,12 @@ const sendMesage = async(req,res) => {
     })
 
 
-}
+})
 
-const seeMessages = async(req,res) => {
+//seeMessages
+router.get('/messages/:id',
+    protectRoute,
+    async(req,res) => {
 
     //res.send('Mensajes..')
     const { id } = req.params
@@ -514,19 +641,6 @@ const seeMessages = async(req,res) => {
         messages: property.messages,
         formatDate,
     })
-}
+})
 
-module.exports =  {
-    admin,
-    create,
-    save,
-    addImage,
-    saveFile,
-    edit,
-    saveChange,
-    remove,
-    changeState,
-    showProperty,
-    sendMesage,
-    seeMessages
-}
+module.exports = router

@@ -10,7 +10,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var userController = require('./controllers/UserController.js');
-// var PropertieRoutes = require('./routes/PropertiesRoutes.js')
+var propertieController = require('./controllers/PropertieController.js')
+
 // var AppRoutes = require('./routes/AppRoutes.js')
 // var ApiRoutes = require( './routes/ApiRoutes.js')
 
@@ -50,6 +51,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 app.use('/', userController);
+app.use('/', propertieController);
 
 app.locals.format = format;
 
