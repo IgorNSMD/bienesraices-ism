@@ -1,24 +1,31 @@
+const express = require('express')
+
 const { check, validationResult } = require('express-validator')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 
 
 const User = require('../model/User.js')
 const { generateId,generateToken } = require('../helpers/token.js')
 const { emailRegister, emailRecoverPassword } = require('../helpers/emails.js')
 
+const router = express.Router();
+
+
 function testUser(req, res, next) {
     res.send('envio UserRoutes');
 }
 
-const getLogin =(req,res) =>{
+//getLogin
+router.get('/login', (req,res) =>{
     res.render('auth/login',{
         authenticated: true,
         pageLabel: 'Iniciar Sesión',
         csrfToken: req.csrfToken(),
     })
-}
+})
 
-const postAuthenticate = async(req,res) => {
+//postAuthenticate)
+router.post('/login', async(req,res) => {
     //console.log('autenticando....')
     //validación
     await check('email').isEmail().withMessage('Correo es obligatorio..').run(req)
@@ -81,15 +88,16 @@ const postAuthenticate = async(req,res) => {
         httpOnly: true,
         //secure: true
     }).redirect('/my-properties')
-}
+})
 
-const postSignOut = async(req,res) => {
+//Cerrar Sesión - postSignOut
+router.post('/signout', async(req,res) => {
     //res.send('Cerrando sesión...')
     return res.clearCookie('_token').status(200).redirect('/auth/login')
-} 
+})
 
-
-const getRegister =(req,res) =>{
+// getRegister 
+router.get('/register', (req,res) =>{
 
     //console.log( req.csrfToken() )
 
@@ -98,9 +106,10 @@ const getRegister =(req,res) =>{
         pageLabel: 'Crear Cuenta',
         csrfToken: req.csrfToken()
     })
-}
+})
 
-const postRegister =async(req,res) =>{
+// postRegister
+router.post('/register', async(req,res) =>{
 
     //console.log(req.body)
 
@@ -184,10 +193,11 @@ const postRegister =async(req,res) =>{
     //console.log(req.body)
     // const user = await User.create(req.body)
     // res.json(user)
-}
+})
 
 // Funcion que comprueba una cuenta
-const getConfirm = async(req, res) =>{
+// getConfirm
+ router.get('/confirm/:token', async(req, res) =>{
     
     const { token } = req.params
 
@@ -218,17 +228,19 @@ const getConfirm = async(req, res) =>{
 
     console.log( user )
     
-}
+})
 
-const getRecoverPassword =(req,res) =>{
+// getRecoverPassword 
+router.get('/recover-password', (req,res) =>{
     res.render('auth/recover-password',{
         authenticated: false,
         csrfToken: req.csrfToken(),
         pageLabel: 'Recuperar Contraseña'
     })
-}
+})
 
-const postResetPassword = async(req,res)=>{
+// postResetPassword 
+router.post('/reset-password', async(req,res)=>{
 
     // Validaciones
     await check('email').isEmail().withMessage('Ingrese Email correctamente..').run(req)
@@ -276,10 +288,10 @@ const postResetPassword = async(req,res)=>{
         message: 'Enviamos un correo con las instrucciones'
     })
 
-}
+})
 
-
-const getCheckToken = async(req,res) => {
+// getCheckToken
+router.get('/recover-password/:token', async(req,res) => {
 
     //console.log('getCheckToken...')
     
@@ -301,9 +313,10 @@ const getCheckToken = async(req,res) => {
         csrfToken: req.csrfToken(),
     })
  
-}
+})
 
-const postNewPassword = async(req,res) => {
+//  postNewPassword 
+router.post('/recover-password/:token', async(req,res) => {
 
    // Validar la nueva password
     await check('password').isLength({min:6}).withMessage('Ingrese Contraseña correctamente..').run(req)
@@ -340,18 +353,6 @@ const postNewPassword = async(req,res) => {
         message: 'Contraseña se grabó correctamente..'
     })
 
-}
+})
 
-module.exports =  {
-    testUser,
-    getLogin,
-    postAuthenticate,
-    postSignOut,
-    getRegister,
-    postRegister,
-    getConfirm,
-    getRecoverPassword,
-    postResetPassword,
-    getCheckToken,
-    postNewPassword
-}
+module.exports =  router
