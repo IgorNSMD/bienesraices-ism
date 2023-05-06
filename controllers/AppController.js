@@ -1,7 +1,11 @@
+const express = require('express')
 const { Sequelize } = require('sequelize')
 const { Price, Category, Property } = require('../model/index.js')
 
-const start = async (req,res) => {
+const router = express.Router();
+
+//router.get('/', start)
+router.get('/', async (req,res) => {
     
     const [ categories, prices, houses, departments ] = await Promise.all([
         Category.findAll({ raw: true }),
@@ -43,9 +47,11 @@ const start = async (req,res) => {
         categories, prices, houses, departments,
         csrfToken: req.csrfToken(),
     })
-}
+})
 
-const category = async (req,res) => {
+// Categorias
+//router.get('/categories/:id', category)
+router.get('/categories/:id', async (req,res) => {
     const { id } = req.params
     
     //console.log( id )
@@ -73,16 +79,20 @@ const category = async (req,res) => {
         properties,
         csrfToken: req.csrfToken(),
     })
-}
+})
 
-const notfound = (req,res) => {
+//Pagina 404
+//router.get('/404', notfound)
+router.get('/404', (req,res) => {
     res.render('404',{
         pageLabel: 'No encontrada',
         csrfToken: req.csrfToken(),
     })
-}
+})
 
-const search = async(req,res) => {
+// Buscador
+//router.post('/search', search)
+router.post('/search', async(req,res) => {
     const { filter } = req.body
 
     // Validar que termino no esté vacio
@@ -108,11 +118,6 @@ const search = async(req,res) => {
         csrfToken: req.csrfToken(),
         properties
     })
-}
+})
 
-module.exports =  {
-    start,
-    category,
-    notfound,
-    search
-}
+module.exports = router

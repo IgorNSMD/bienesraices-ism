@@ -11,8 +11,8 @@ var usersRouter = require('./routes/users');
 
 var userController = require('./controllers/UserController.js');
 var propertieController = require('./controllers/PropertieController.js')
+var appController = require('./controllers/AppController.js')
 
-// var AppRoutes = require('./routes/AppRoutes.js')
 // var ApiRoutes = require( './routes/ApiRoutes.js')
 
 var db = require('./config/db.js');
@@ -52,6 +52,7 @@ app.use('/users', usersRouter);
 
 app.use('/', userController);
 app.use('/', propertieController);
+app.use('/', appController);
 
 app.locals.format = format;
 
