@@ -1,6 +1,10 @@
+const express = require('express')
 const { Property, Price, Category } = require('../model/index.js')
 
-const properties = async(req,res) => {
+const router = express.Router();
+
+//router.get('/properties', properties )
+router.get('/properties', async(req,res) => {
 
     const properties = await Property.findAll({
         include:[
@@ -10,8 +14,6 @@ const properties = async(req,res) => {
     })
 
     res.json(properties)
-}
+})
 
-module.exports =  {
-    properties
-}
+module.exports = router
