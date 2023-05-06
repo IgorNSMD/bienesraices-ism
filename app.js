@@ -28,7 +28,7 @@ async function getDb() {
 
 }
 
-//getDb();
+getDb();
 
 
 var app = express();
