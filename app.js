@@ -46,13 +46,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Habilitar CSRF
 app.use( csrf({cookie: true}) )
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use("/js", express.static(__dirname + "/node_modules/bootstrap/dist/js")); // redirect bootstrap JS
+app.use(
+  "/css",
+  express.static(__dirname + "/node_modules/bootstrap/dist/css")
+); // redirect CSS bootstrap
 
-app.use('/', userController);
-app.use('/', propertieController);
+
 app.use('/', appController);
-app.use('/', apiController);
+app.use('/auth', userController);
+app.use('/', propertieController);
+app.use('/api', apiController);
 
 app.locals.format = format;
 
