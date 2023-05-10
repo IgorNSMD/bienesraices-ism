@@ -26,7 +26,7 @@ router.get('/', async (req,res) => {
  // console.log( categories )
 
   res.render('start',{
-      pageLabel:'Inicio P64',
+      pageLabel:'Inicio P65',
       //categories, prices, houses, departments,
       //csrfToken: req.csrfToken(),
   })
