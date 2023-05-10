@@ -22,11 +22,13 @@ const router = express.Router();
 
 //router.get('/', start)
 router.get('/', async (req,res) => {
+
+  const properties = await Property.findAll()
     
  // console.log( categories )
 
   res.render('start',{
-      pageLabel:'Inicio P65',
+      pageLabel:'Inicio P66',
       //categories, prices, houses, departments,
       //csrfToken: req.csrfToken(),
   })
