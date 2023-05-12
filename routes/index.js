@@ -10,8 +10,10 @@
 
 
 var express = require('express')
+
 var { Sequelize } = require('sequelize')
-var { Price, Category, Property } = require('../model/index.js')
+
+var Category  = require('../model/Category.js')
 
 const router = express.Router();
 
@@ -23,12 +25,12 @@ const router = express.Router();
 //router.get('/', start)
 router.get('/', async (req,res) => {
 
-  var properties = await Property.findAll()
+  var categories = await Category.findAll()
     
-  console.log( properties )
+  console.log( categories )
 
   res.render('start',{
-      pageLabel:'Inicio P67',
+      pageLabel:'Inicio P69..',
       //categories, prices, houses, departments,
       //csrfToken: req.csrfToken(),
   })
