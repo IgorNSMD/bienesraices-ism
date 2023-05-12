@@ -13,7 +13,7 @@ var express = require('express')
 
 var { Sequelize } = require('sequelize')
 
-var Category  = require('../model/Category.js')
+var Category  = require('../model/Category')
 
 const router = express.Router();
 
@@ -23,17 +23,23 @@ const router = express.Router();
 // });
 
 //router.get('/', start)
-router.get('/', async (req,res) => {
+router.get('/', async function(req,res){
 
-  var categories = await Category.findAll()
-    
-  console.log( categories )
+  try {
+    const categories = await Category.findAll()
+    console.log( categories )
 
-  res.render('start',{
-      pageLabel:'Inicio P69..',
+    res.render('start',{
+      pageLabel:'Inicio P70..',
       //categories, prices, houses, departments,
       //csrfToken: req.csrfToken(),
-  })
+    })
+
+  } catch (err) {
+    console.log(err);
+    res.send('Sorry! Something went wrong.');    
+  }
+ 
 })
 
 
