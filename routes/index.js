@@ -30,14 +30,14 @@ router.get('/', async function(req,res){
     console.log( categories )
 
     res.render('start',{
-      pageLabel:'Inicio P70..',
+      pageLabel:'Inicio P71..',
       //categories, prices, houses, departments,
       //csrfToken: req.csrfToken(),
     })
 
   } catch (err) {
     console.log(err);
-    res.send('Sorry! Something went wrong.');    
+    res.send('Sorry! Something went wrong.' + err);    
   }
  
 })
