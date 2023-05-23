@@ -1,38 +1,52 @@
-// var express = require('express');
-// var router = express.Router();
-
-// /* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express - Bienes Raices-ISM - MySQL - P58..' });
-// });
-
-// module.exports = router;
-
 
 var express = require('express')
 
 var { Sequelize } = require('sequelize')
 
-var Category  = require('../model/Category')
+var { Price, Category, Property }  = require('../model/index')
 
 const router = express.Router();
 
-/* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express - Bienes Raices-ISM - MySQL - P60..' });
-// });
-
-//router.get('/', start)
 router.get('/', async function(req,res){
 
   try {
-    const categories = await Category.findAll()
-    console.log( categories )
+    const [ categories, prices, houses, departments ] = await Promise.all([
+      Category.findAll({ raw: true }),
+      Price.findAll({ raw: true }),
+      Property.findAll({ 
+          limit: 3,
+          where: {
+              categoryid: 1
+          },
+          include: [
+              {
+                  model: Price, as:'price'
+              }
+          ],
+          order: [
+              ['createdAt','DESC']
+          ]
+       }),
+       Property.findAll({ 
+          limit: 3,
+          where: {
+              categoryid: 2
+          },
+          include: [
+              {
+                  model: Price, as:'price'
+              }
+          ],
+          order: [
+              ['createdAt','DESC']
+          ]
+       })
+    ])
 
     res.render('start',{
-      pageLabel:'Inicio P71..',
-      //categories, prices, houses, departments,
-      //csrfToken: req.csrfToken(),
+      pageLabel:'Inicio',
+      categories, prices, houses, departments,
+      csrfToken: req.csrfToken(),
     })
 
   } catch (err) {
